@@ -1,0 +1,91 @@
+一个被观察者接口，接口里有新增观察者，删除观察者，通知观察者等方法，被观察者实现类在通知方法里去循环调用观察者的接收消息方法（update方法），
+一个观察者接口，有一个接收通知的方法（update），多个观察者实现类去实现方法，完成各自接收到新消息的动作。
+
+解释： 目标方法中有 新增， 删除 ， 通知， 方法  ， 实现类中得 维护一个list 集合  新增得时候将观察者 添加入 list 集合。  当message 有新的值得时候调用
+通知 观察者。
+
+ 观察者：有个接收通知得方法update ， 实现类 实现此 接口，   实现类中可定义 name 名字 ，name参数得构造方法， 接收得参数message
+ 
+ 最后测试：
+  /**
+ * 被观察者接口
+ */
+public interface Observerable {
+    void addObserver(Observer observer);        //新增一个观察者
+    void deleteObserver(Observer observer);     //移除一个观察者
+    void notifyObserver();      //通知观察者
+}
+
+/**
+ * 被观察者 微信公众号
+ */
+public class WechatServer implements Observerable{
+    private List<Observer> list;
+    private String message;
+    public WechatServer() {
+        list = new ArrayList<>();
+    }
+    @Override
+    public void addObserver(Observer observer) {
+        this.list.add(observer);
+    }
+    @Override
+    public void deleteObserver(Observer observer) {
+        if (!this.list.isEmpty()){
+            list.remove(observer);
+        }
+    }
+    @Override
+    public void notifyObserver() {
+        for(Observer observer : list){
+            observer.update(message);
+        }
+    }
+    public void setInformation(String s){
+        this.message = s;
+        System.out.println("发布新消息：" + s);
+        notifyObserver();
+    }
+}
+/**
+ * 抽象观察者接口
+ */
+public interface Observer {
+    void update(String message);    //接收到通知进行更新
+}
+
+/**
+ * 观察者 具体用户
+ */
+public class User implements Observer{
+    private String name;
+    private String message;
+    public User(String name) {
+        this.name = name;
+    }
+    @Override
+    public void update(String message) {
+        this.message = message;
+        read();
+    }
+    private void read() {
+        System.out.println(this.name + "收到新消息：" + this.message);
+    }
+}
+public class Main {
+    public static void main(String[] args) {
+        WechatServer weixin = new WechatServer();
+        User u1 = new User("张三");
+        User u2 = new User("李四");
+        User u3 = new User("王五");
+        weixin.addObserver(u1);
+        weixin.addObserver(u2);
+        weixin.addObserver(u3);
+        weixin.setInformation("发布第一条消息");   //发布新消息：发布第一条消息 张三收到新消息：发布第一条消息 李四收到新消息：发布第一条消息 王五收到新消息：发布第一条消息
+
+        weixin.deleteObserver(u2);
+        System.out.println("李四退出订阅");   //李四退出订阅
+        weixin.setInformation("发布第二条消息");   //发布新消息：发布第二条消息 张三收到新消息：发布第二条消息 王五收到新消息：发布第二条消息
+    }
+}
+
