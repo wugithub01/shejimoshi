@@ -1,0 +1,162 @@
+
+来看看建造者模式的定义，将一个复杂对象的构建与它的表示分离，使得同样的构建过程可以创建不同的表示。
+建房子的过程都是相似的，但可以建出形形色色的房子。
+
+比如 ：1. 创建一个自行车生产线得接口   // 组装轮胎 // 组装车架 // 组装GPS定位装置  // 获取自行车
+
+      2. * 摩拜单车生产线 实现自行车 生产线接口 拥有 自行车对象  ，通过实现得方法设置属性
+      
+      3.定义单车对象  生产线中得属性
+      
+      4.定义工程部  作为指挥者，可以指导生产部门作业
+          构造方法中 用户告知指挥者想要什么样的单车 ，传入单车对象
+          / 指导组装单车。 单车对象 调用 组装方法。
+          
+          5.测试
+          
+   ==========================================       
+          package com.jet.pattern.builder;
+
+import com.jet.pattern.builder.impl.Bike;
+
+/**
+ * description:
+ * 自行车生产线接口
+ * Created by chenzanjin on 2017/2/22.
+ */
+public interface BikeBuilder {
+    // 组装轮胎
+    public void buildTyres();
+    // 组装车架
+    public void buildFrame();
+    // 组装GPS定位装置
+    public void buildGPS();
+    // 获取自行车
+    public Bike getBike();
+}
+================
+package com.jet.pattern.builder.impl;
+
+import com.jet.pattern.builder.BikeBuilder;
+
+/**
+ * description:
+ * 摩拜单车生产线
+ * Created by chenzanjin on 2017/2/22.
+ */
+public class MoBikeBuilder implements BikeBuilder {
+    // 拥有单车对象
+    Bike bike = new Bike();
+    @Override
+    public void buildTyres() {
+        bike.setTyre("橙色轮胎");
+    }
+
+    @Override
+    public void buildFrame() {
+        bike.setFrame("橙色车架");
+    }
+
+    @Override
+    public void buildGPS() {
+        bike.setGps("mobike定制版GPS定位装置");
+    }
+
+    @Override
+    public Bike getBike() {
+        return bike;
+    }
+}
+==================
+package com.jet.pattern.builder.impl;
+
+/**
+ * description:
+ * 自行车对象
+ * Created by chenzanjin on 2017/2/22.
+ */
+public class Bike {
+    // 轮胎
+    private String tyre;
+    // 车架
+    private String frame;
+    // GPS定位装置
+    private String gps;
+
+    public String getTyre() {
+        return tyre;
+    }
+
+    public void setTyre(String tyre) {
+        this.tyre = tyre;
+    }
+
+    public String getFrame() {
+        return frame;
+    }
+
+    public void setFrame(String frame) {
+        this.frame = frame;
+    }
+
+    public String getGps() {
+        return gps;
+    }
+
+    public void setGps(String gps) {
+        this.gps = gps;
+    }
+}
+=================
+package com.jet.pattern.builder.impl;
+
+import com.jet.pattern.builder.BikeBuilder;
+
+/**
+ * description：
+ * 工程部门作为指挥者，可以指导生产部门作业
+ * Created by Administrator on 2017/2/22.
+ */
+public class EngineeringDepartment {
+    // 用户告知指挥者想要什么样的单车
+    BikeBuilder bikeBuilder;
+    public EngineeringDepartment(BikeBuilder bikeBuilder){
+        this.bikeBuilder = bikeBuilder;
+    }
+
+    // 指导组装单车
+    public void Construct(){
+        bikeBuilder.buildTyres();
+        bikeBuilder.buildFrame();
+        bikeBuilder.buildGPS();
+    }
+}
+==================
+package com.jet.pattern.builder.impl;
+
+import com.jet.pattern.builder.BikeBuilder;
+
+/**
+ * description:
+ * 建造者测试类
+ * Created by Administrator on 2017/2/22.
+ */
+public class Test {
+    public static void main(String[] args) {
+        // 建造摩拜单车
+        BikeBuilder moBikeBuilder = new MoBikeBuilder();
+        EngineeringDepartment ed1 = new EngineeringDepartment(moBikeBuilder);
+        ed1.Construct();// 指导组装
+        // 产出单车，体现建造和显示分离
+        Bike moBike = moBikeBuilder.getBike();
+
+        // 建造ofo单车
+        BikeBuilder ofoBikeBuilder = new MoBikeBuilder();
+        EngineeringDepartment ed2 = new EngineeringDepartment(ofoBikeBuilder);
+        ed2.Construct();// 指导组装
+        Bike ofoBike = ofoBikeBuilder.getBike();
+
+    }
+}
+          
+        
