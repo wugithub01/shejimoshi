@@ -1,0 +1,48 @@
+1. 一个抽象类中 定义抽象方法 ， 一个执行这些定义得方法得模板方法（final 修饰），
+、封装不变部分（final模板中），扩展可变部分（抽象方法）。 2、提取公共代码，便于维护。 3、行为由父类控制，子类实现。
+
+使用场景： 1、有多个子类共有的方法，且逻辑相同。 2、重要的、复杂的方法，可以考虑作为模板方法
+
+public abstract class Game {
+   abstract void initialize();
+   abstract void startPlay();
+   abstract void endPlay();
+ 
+   //模板
+   public final void play(){
+ 
+      //初始化游戏
+      initialize();
+ 
+      //开始游戏
+      startPlay();
+ 
+      //结束游戏
+      endPlay();
+   }
+}
+public class Cricket extends Game {
+ 
+   @Override
+   void endPlay() {
+      System.out.println("Cricket Game Finished!");
+   }
+ 
+   @Override
+   void initialize() {
+      System.out.println("Cricket Game Initialized! Start playing.");
+   }
+ 
+   @Override
+   void startPlay() {
+      System.out.println("Cricket Game Started. Enjoy the game!");
+   }
+}
+public class TemplatePatternDemo {
+   public static void main(String[] args) {
+ 
+      Game game = new Cricket();
+      game.play();
+           
+   }
+}
